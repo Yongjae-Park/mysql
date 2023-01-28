@@ -59,7 +59,7 @@ public class MemberRepository {
                 .withTableName("Member")
                 .usingGeneratedKeyColumns("id");
         SqlParameterSource params = new BeanPropertySqlParameterSource(member);
-        long id = simpleJdbcInsert.execute(params);
+        long id = simpleJdbcInsert.executeAndReturnKey(params).longValue();
         return Member
                 .builder()
                 .id(id)
