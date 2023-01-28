@@ -30,4 +30,15 @@ public class MemberTest {
         assertEquals(expected, member.getNickname());
     }
 
+    @DisplayName("회원의 닉네임은 10자를 초과할 수 없다.")
+    @Test
+    public void testNicknameMaxLength() {
+
+        Member member = MemberFixtureFactory.create();
+        String overMaxLengthNickName = "ytothej92ytothej92";
+
+        assertThrows(IllegalArgumentException.class,
+                () -> member.changeNickname(overMaxLengthNickName));
+    }
+
 }
