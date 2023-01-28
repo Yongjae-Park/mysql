@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.controller;
 
+import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.dto.RegisterMemberCommand;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.service.MemberReadService;
@@ -14,14 +15,14 @@ public class MemberController {
     final private MemberWriteService memberWriteService;
     final private MemberReadService memberReadService;
 
-    //TODO : 엔티티를 그대로 반환하지 않고 dto로 반환하도록 변경
     @PostMapping("/members")
-    public Member register(@RequestBody RegisterMemberCommand command) {
-        return memberWriteService.create(command);
+    public MemberDto register(@RequestBody RegisterMemberCommand command) {
+        Member member = memberWriteService.register(command);
+        return memberReadService.toDto(member);
     }
 
     @GetMapping("/members/{id}")
-    public Member getMember(@PathVariable Long id) {
+    public MemberDto getMember(@PathVariable Long id) {
         return memberReadService.getMember(id);
     }
 }
