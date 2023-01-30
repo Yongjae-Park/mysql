@@ -47,6 +47,9 @@ public class MemberRepository {
     }
 
     public List<Member> findAllByIdIn(List<Long> ids) {
+
+        if (ids.isEmpty())
+            return List.of();
         /*
             TODO: 반복코드 중복제거
          */
