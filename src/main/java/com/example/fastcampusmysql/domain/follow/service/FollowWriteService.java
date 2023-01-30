@@ -24,7 +24,7 @@ public class FollowWriteService {
             경계간 통신에 대한 고민
          */
 
-        Assert.isTrue(fromMember.id().equals(toMember.id()), "from, to 회원이 동일합니다.");
+        Assert.isTrue(!fromMember.id().equals(toMember.id()), "from, to 회원이 동일합니다.");
 
         Follow follow = Follow.builder()
                 .fromMemberId(fromMember.id())
