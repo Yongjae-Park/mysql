@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.domain.follow.entity;
 
+import com.example.fastcampusmysql.application.utils.FieldUtils;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -33,7 +34,6 @@ public class Follow {
         this.id = id;
         this.fromMemberId = Objects.requireNonNull(fromMemberId);
         this.toMemberId = Objects.requireNonNull(toMemberId);
-        //TODO : 해당 createdAt 값 가져오는 과정이 중복코드가 됐음. util로 빼내는 작업
-        this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
+        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 }

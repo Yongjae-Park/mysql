@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.domain.member.entity;
 
+import com.example.fastcampusmysql.application.utils.FieldUtils;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.util.Assert;
@@ -30,7 +31,7 @@ public class Member {
         this.birthday = Objects.requireNonNull(birthday);
         validateNickname(nickname);
         this.nickname = Objects.requireNonNull(nickname);
-        this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
+        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
     private void validateNickname(String nickname) {

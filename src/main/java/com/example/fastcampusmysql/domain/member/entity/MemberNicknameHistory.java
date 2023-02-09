@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.domain.member.entity;
 
+import com.example.fastcampusmysql.application.utils.FieldUtils;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,7 +22,7 @@ public class MemberNicknameHistory {
         this.id = id;
         this.memberId = Objects.requireNonNull(memberId);
         this.nickname = Objects.requireNonNull(nickname);
-        this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
+        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
 }
