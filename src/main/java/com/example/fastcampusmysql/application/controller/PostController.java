@@ -1,20 +1,33 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
+import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.dto.PostDto;
+import com.example.fastcampusmysql.domain.post.service.PostReadService;
 import com.example.fastcampusmysql.domain.post.service.PostWriteService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
 public class PostController {
     final private PostWriteService postWriteService;
+    final private PostReadService postReadService;
 
     @PostMapping("")
     public Long register(PostDto postDto) {
         return postWriteService.create(postDto);
     }
+
+    @GetMapping("/daily-post-counts")
+    public List<DailyPostCount> getDailyPostCounts(DailyPostCountRequest request) {
+        return postReadService.getDailyPostCounts(request);
+    }
+
 }
