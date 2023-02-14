@@ -29,10 +29,6 @@ create table Follow
         primary key (id)
 );
 
-create unique index Follow_fromMemberId_toMemberId_uindex
-    on Follow (fromMemberId, toMemberId);
-
-
 create table POST
 (
     id int auto_increment,
@@ -44,11 +40,17 @@ create table POST
         primary key (id)
 );
 
+create unique index Follow_fromMemberId_toMemberId_uindex
+    on Follow (fromMemberId, toMemberId);
+
 create index POST__index_member_id
     on POST (memberId);
 
 create index POST__index_created_date
     on POST (createdDate);
+
+create index POST__index_member_id_created_date
+    on POST (memberId, createdDate);
 
 
 
