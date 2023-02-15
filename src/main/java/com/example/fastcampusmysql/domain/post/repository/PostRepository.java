@@ -1,12 +1,14 @@
 package com.example.fastcampusmysql.domain.post.repository;
 
-import com.example.fastcampusmysql.domain.follow.entity.Follow;
+import com.example.fastcampusmysql.application.utils.PageHelper;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -24,14 +26,13 @@ public class PostRepository {
     static final String TABLE = "Post";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    static final private RowMapper<DailyPostCount> DAILY_POST_COUNT_MAPPER = (ResultSet resultSet, int rowNum)
-            -> new DailyPostCount(
-                    resultSet.getLong("memberId"),
-                    resultSet.getObject("createdDate", LocalDate.class),
-                    resultSet.getLong("count")
-            );
-
+    final static private RowMapper<Post> ROW_MAPPER = (ResultSet resultSet, int rowNum) -> Post.builder()
+            .id(resultSet.getLong("id"))
+            .memberId(resultSet.getLong("id"))
+            .contents(resultSet.getString("contents"))
+            .createdDate(resultSet.getObject("createdDate", LocalDate.class))
+            .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
+            .build();
 
     public List<DailyPostCount> groupByCreatedDate(DailyPostCountRequest request) {
         String sql = String.format("""
@@ -43,9 +44,52 @@ public class PostRepository {
 
         BeanPropertySqlParameterSource params = new BeanPropertySqlParameterSource(request);
 
+        RowMapper<DailyPostCount> DAILY_POST_COUNT_MAPPER = (ResultSet resultSet, int rowNum)
+                -> new DailyPostCount(
+                resultSet.getLong("memberId"),
+                resultSet.getObject("createdDate", LocalDate.class),
+                resultSet.getLong("count")
+        );
 
         return namedParameterJdbcTemplate.query(sql, params, DAILY_POST_COUNT_MAPPER);
+    }
 
+    /**
+     * 추후 Spring Data Jpa 적용할 때 코드 변경 최소화하기 위해
+     * 최대한 springDataJpa의 인터페이스에 맞춰 메소드명, 파라미터 동일하게 사용
+     * @param memberId
+     * @param pageRequest
+     * @return
+     */
+    public Page<Post> findAllByMemberId(Long memberId, Pageable pageRequest) {
+        var params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("offset", pageRequest.getOffset())
+                .addValue("size", pageRequest.getPageSize());
+
+        Sort sort = pageRequest.getSort();
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId
+                ORDER BY %s
+                LIMIT :offset, :size
+                """, TABLE, PageHelper.orderBy(sort));
+
+        var posts = namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+        return new PageImpl<Post>(posts, pageRequest, getCount(memberId));
+    }
+
+    private Long getCount(Long memberId) {
+        String sql = String.format("""
+                SELECT count(id)
+                FROM %s
+                WHERE memberId = :memberId
+                """, TABLE);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberId", memberId);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
     public void bulkInsert(List<Post> posts) {
