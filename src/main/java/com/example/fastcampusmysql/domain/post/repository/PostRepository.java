@@ -96,6 +96,23 @@ public class PostRepository {
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
+    public List<Post> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size) {
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId and id < :id
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
     private Long getCount(Long memberId) {
         String sql = String.format("""
                 SELECT count(id)
