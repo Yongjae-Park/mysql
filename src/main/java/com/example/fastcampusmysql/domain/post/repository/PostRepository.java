@@ -80,6 +80,22 @@ public class PostRepository {
         return new PageImpl<Post>(posts, pageRequest, getCount(memberId));
     }
 
+    public List<Post> findAllByMemberIdAndOrderByIdDesc(Long memberId, int size) {
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
     private Long getCount(Long memberId) {
         String sql = String.format("""
                 SELECT count(id)
