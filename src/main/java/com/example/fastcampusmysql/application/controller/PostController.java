@@ -1,5 +1,7 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.application.utils.CursorRequest;
+import com.example.fastcampusmysql.application.utils.PageCursor;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.dto.PostDto;
@@ -41,5 +43,14 @@ public class PostController {
     ) {
         return postReadService.getPosts(memberId, pageable);
     }
+
+    @GetMapping("/members/{memberId}/by-cursor")
+    public PageCursor<Post> getPostByCursor(
+            @PathVariable Long memberId,
+            CursorRequest cursorRequest
+    ) {
+        return postReadService.getPosts(memberId, cursorRequest);
+    }
+
 
 }
