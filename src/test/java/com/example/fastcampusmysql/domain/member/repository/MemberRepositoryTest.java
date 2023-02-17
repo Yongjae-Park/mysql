@@ -11,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -49,11 +51,12 @@ class MemberRepositoryTest {
         memberRepository.saveAll(memberDatas);
     }
 
+    @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 COUNT + 3이다.")
     @Test
-    public void saveAllTest() {
-        Member member1 = new Member(1L, "yy", "@", LocalDate.of(1992, 4, 14), null);
-        Member member2 = new Member(2L, "yy", "@", LocalDate.of(1992, 4, 14), null);
-        Member member3 = new Member(3L, "yy", "@", LocalDate.of(1992, 4, 14), null);
+    public void saveAll_Test() {
+        Member member1 = new Member(null, "yongjae1", "yy@hh", LocalDate.of(1992, 04, 14), null);
+        Member member2 = new Member(null, "yongjae2", "yy@hh", LocalDate.of(1992, 04, 14), null);
+        Member member3 = new Member(null, "yongjae3", "yy@hh", LocalDate.of(1992, 04, 14), null);
 
         List<Member> members = new ArrayList<>();
 
@@ -62,21 +65,41 @@ class MemberRepositoryTest {
         members.add(member3);
 
         memberRepository.saveAll(members);
+
+        List<Member> all = memberRepository.findAll();
+
+        assertThat(all.size()).isEqualTo(COUNT + 3);
     }
 
-    @DisplayName("멤버 인스턴스의 id와 생성 후 멤버 id 값이 같다.")
+    @DisplayName("멤버 인스턴스의 id와 생성 후 조회한 멤버 id 값이 같다.")
     @Test
-    void findByIdTest() {
+    void findById_Test() {
+        Member member = createMember();
+
+        Optional<Member> findMember = memberRepository.findById(member.getId());
+
+        assertThat(findMember.orElseThrow().getId()).isEqualTo(member.getId());
+    }
+
+    Member createMember() {
         Member member = Member.builder()
-                .id(id)
                 .nickname("yongjae")
                 .email("yongjae@gmail.com")
                 .birthday(LocalDate.of(1992,04,14))
                 .build();
 
-        Member savedMember = memberRepository.save(member);
+        return memberRepository.save(member);
+    }
 
-        assertThat(savedMember.getId()).isEqualTo(id);
+    @DisplayName("없는 id의 경우 null을 반환받는다.")
+    @Test()
+    void findById_InvalidId_Test() {
+//        assertThrows(EmptyResultDataAccessException.class, () -> {
+//            memberRepository.findById(-1L);
+//        });
+        Optional<Member> findMember = memberRepository.findById(-1L);
+
+        assertNull(findMember);
     }
 
     @DisplayName("IN조건 만족하는 멤버를 전체 조회한다.")
@@ -109,12 +132,7 @@ class MemberRepositoryTest {
     @DisplayName("생성한 멤버의 id와 생성 후 멤버의 id가 같다.")
     @Test
     void save_Test() {
-        Member member = Member.builder()
-                .id(id)
-                .nickname("ytothej92")
-                .email("ytothej92@gmail.com")
-                .birthday(LocalDate.of(1992,04,14))
-                .build();
+        Member member = createMember();
 
         Member savedMember = memberRepository.save(member);
 

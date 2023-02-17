@@ -45,9 +45,15 @@ public class MemberRepository {
             Member member = namedParameterJdbcTemplate.queryForObject(sql, param, rowMapper);
             return Optional.ofNullable(member);
         } catch (EmptyResultDataAccessException e) {
-
+            System.out.println("해당 id를 가진 회원이 없습니다.");
         }
         return null;
+//        Member member = namedParameterJdbcTemplate.queryForObject(sql, param, rowMapper);
+//        if (member == null)
+//            throw new EmptyResultDataAccessException("해당 id를 가진 회원이 없습니다.", 1);
+//        return Optional.ofNullable(member);
+
+//        return null;
     }
 
     public List<Member> findAllByIdIn(List<Long> ids) {
