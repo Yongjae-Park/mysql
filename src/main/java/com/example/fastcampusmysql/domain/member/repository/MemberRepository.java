@@ -2,6 +2,7 @@ package com.example.fastcampusmysql.domain.member.repository;
 
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -40,10 +41,13 @@ public class MemberRepository {
         String sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
         MapSqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", id);
+        try {
+            Member member = namedParameterJdbcTemplate.queryForObject(sql, param, rowMapper);
+            return Optional.ofNullable(member);
+        } catch (EmptyResultDataAccessException e) {
 
-        Member member = namedParameterJdbcTemplate.queryForObject(sql, param, rowMapper);
-
-        return Optional.ofNullable(member);
+        }
+        return null;
     }
 
     public List<Member> findAllByIdIn(List<Long> ids) {
@@ -65,6 +69,20 @@ public class MemberRepository {
         if (member.getId() == null)
             return insert(member);
         return update(member);
+    }
+
+    public void saveAll(List<Member> members) {
+        String sql = String.format("""
+                INSERT INTO %s (nickname, email, birthday, createdAt)
+                VALUES (:nickname, :email, :birthday, :createdAt)
+                """, TABLE);
+
+        SqlParameterSource[] params = members
+                .stream()
+                .map(BeanPropertySqlParameterSource::new)
+                .toArray(SqlParameterSource[]::new);
+
+        namedParameterJdbcTemplate.batchUpdate(sql, params);
     }
 
     private Member insert(Member member) {
@@ -89,5 +107,14 @@ public class MemberRepository {
         SqlParameterSource params = new BeanPropertySqlParameterSource(member);
         namedParameterJdbcTemplate.update(sql, params);
         return member;
+    }
+
+    public List<Member> findAll() {
+        String sql = String.format("""
+                SELECT *
+                FROM %s
+                """, TABLE);
+
+        return namedParameterJdbcTemplate.query(sql, rowMapper);
     }
 }
