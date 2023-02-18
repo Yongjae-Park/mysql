@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class MemberWriteService {
+    /**
+     *  TODO: 회원 등록 검증 spring security
+     *  oAuth
+     */
 
     final private MemberRepository memberRepository;
 
@@ -28,7 +32,7 @@ public class MemberWriteService {
                 .birthday(command.birthday())
                 .build();
         Member savedMember =  memberRepository.save(member);
-        saveMemberNicknameHistory(savedMember);
+//        saveMemberNicknameHistory(savedMember);
         return savedMember;
     }
 
