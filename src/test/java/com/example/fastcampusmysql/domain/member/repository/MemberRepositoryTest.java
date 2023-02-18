@@ -51,7 +51,7 @@ class MemberRepositoryTest {
         memberRepository.saveAll(memberDatas);
     }
 
-    @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 COUNT + 3이다.")
+    @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 기본 생성 멤버수 + 3 이다.")
     @Test
     public void saveAll_Test() {
         Member member1 = new Member(null, "yongjae1", "yy@hh", LocalDate.of(1992, 04, 14), null);
