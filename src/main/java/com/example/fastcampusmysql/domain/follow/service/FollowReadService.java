@@ -15,7 +15,10 @@ import java.util.List;
 public class FollowReadService {
     final private FollowRepository followRepository;
 
-    public List<FollowDto> getFollowings(Long memberId) {
+    public List<Follow> getFollowings(Long memberId) {
+        return followRepository.findAllByFromMemberId(memberId);
+    }
+    public List<FollowDto> getFollowingsDto(Long memberId) {
         return followRepository.findAllByFromMemberId(memberId)
                 .stream()
                 .map(this::toDto)

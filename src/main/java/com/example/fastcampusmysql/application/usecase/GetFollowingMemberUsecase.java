@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.application.usecase;
 
 import com.example.fastcampusmysql.domain.follow.dto.FollowDto;
+import com.example.fastcampusmysql.domain.follow.entity.Follow;
 import com.example.fastcampusmysql.domain.follow.repository.FollowRepository;
 import com.example.fastcampusmysql.domain.follow.service.FollowReadService;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
@@ -22,10 +23,10 @@ public class GetFollowingMemberUsecase {
             1. fromMemberID = memberId -> follow list
             2. 1을 순회하면서 회원정보를 찾으면 된다.
          */
-        List<FollowDto> followings = followReadService.getFollowings(memberId);
+        List<Follow> followings = followReadService.getFollowings(memberId);
         List<Long> followingMemberIds = followings
                 .stream()
-                .map(FollowDto::toMemberId)
+                .map(Follow::getToMemberId)
                 .toList();
 
         return memberReadService.getMembers(followingMemberIds);
