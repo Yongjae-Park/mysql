@@ -28,7 +28,7 @@ public class PostRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     final static private RowMapper<Post> ROW_MAPPER = (ResultSet resultSet, int rowNum) -> Post.builder()
             .id(resultSet.getLong("id"))
-            .memberId(resultSet.getLong("id"))
+            .memberId(resultSet.getLong("memberId"))
             .contents(resultSet.getString("contents"))
             .createdDate(resultSet.getObject("createdDate", LocalDate.class))
             .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
@@ -96,6 +96,25 @@ public class PostRepository {
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
+    public List<Post> findAllByInMemberIdAndOrderByIdDesc(List<Long> memberIds, int size) {
+        if (memberIds.isEmpty())
+            return List.of();
+
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId IN (:memberIds)
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("memberIds", memberIds)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
     public List<Post> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size) {
         String query = String.format("""
                 SELECT *
@@ -108,6 +127,26 @@ public class PostRepository {
         var params = new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
+    public List<Post> findAllByLessThanIdAndInMemberIdsAndOrderByIdDesc(Long id, List<Long> memberIds, int size) {
+        if (memberIds.isEmpty())
+            return List.of();
+
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId IN (:memberIds) and id < :id
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("memberIds", memberIds)
                 .addValue("size", size);
 
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);

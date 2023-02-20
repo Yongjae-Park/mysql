@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.application.usecase.GetTimeLinePostUsecase;
 import com.example.fastcampusmysql.application.utils.CursorRequest;
 import com.example.fastcampusmysql.application.utils.PageCursor;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
@@ -8,11 +9,8 @@ import com.example.fastcampusmysql.domain.post.dto.PostDto;
 import com.example.fastcampusmysql.domain.post.entity.Post;
 import com.example.fastcampusmysql.domain.post.service.PostReadService;
 import com.example.fastcampusmysql.domain.post.service.PostWriteService;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +23,8 @@ import java.util.List;
 public class PostController {
     final private PostWriteService postWriteService;
     final private PostReadService postReadService;
+
+    final private GetTimeLinePostUsecase getTimeLinePostUsecase;
 
     @PostMapping("")
     public Long register(PostDto postDto) {
@@ -52,5 +52,12 @@ public class PostController {
         return postReadService.getPosts(memberId, cursorRequest);
     }
 
+    @GetMapping("/memers/{memberId}/timeline")
+    public PageCursor<Post> getTimeline(
+            @PathVariable Long memberId,
+            CursorRequest cursorRequest
+    ) {
+        return getTimeLinePostUsecase.execute(memberId, cursorRequest);
+    }
 
 }
