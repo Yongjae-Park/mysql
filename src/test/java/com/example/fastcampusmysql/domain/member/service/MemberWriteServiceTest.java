@@ -1,6 +1,6 @@
 package com.example.fastcampusmysql.domain.member.service;
 
-import com.example.fastcampusmysql.domain.member.dto.RegisterMemberCommand;
+import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.entity.MemberNicknameHistory;
 import com.example.fastcampusmysql.domain.member.repository.MemberNicknameHistoryRepository;
@@ -16,9 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.anyOf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -33,7 +31,7 @@ class MemberWriteServiceTest {
     @Autowired
     MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
-    RegisterMemberCommand memberDto;
+    MemberDto.RegisterMemberCommand memberDto;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +39,7 @@ class MemberWriteServiceTest {
         String nickname = "yongjae";
         LocalDate birthDay = LocalDate.of(1992, 4, 14);
 
-        memberDto = new RegisterMemberCommand(email, nickname, birthDay);
+        memberDto = new MemberDto.RegisterMemberCommand(email, nickname, birthDay);
     }
 
     @DisplayName("회원 등록 후 조회한 id가 같다.")

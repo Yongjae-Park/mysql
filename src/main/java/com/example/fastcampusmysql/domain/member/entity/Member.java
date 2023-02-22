@@ -29,19 +29,19 @@ public class Member {
         this.id = id;
         this.email = Objects.requireNonNull(email);
         this.birthday = Objects.requireNonNull(birthday);
-        validateNickname(nickname);
+//        validateNickname(nickname);
         this.nickname = Objects.requireNonNull(nickname);
         this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
-    private void validateNickname(String nickname) {
-        //TODO : 커스텀 익셉션 추가로 변경
-        Assert.isTrue(nickname.length() <= NAME_MAX_LENGTH, "최대 길이를 초과했습니다.");
-    }
+//    private void validateNickname(String nickname) {
+//        //TODO : 커스텀 익셉션 추가로 변경
+//        Assert.isTrue(nickname.length() <= NAME_MAX_LENGTH, "최대 길이를 초과했습니다.");
+//    }
 
     public void changeNickname(String to) {
         Objects.requireNonNull(to);
-        validateNickname(to);
+//        validateNickname(to);
         nickname = to;
     }
 }
