@@ -2,13 +2,10 @@ package com.example.fastcampusmysql.application.controller;
 
 
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +39,6 @@ public class MemberControllerTest {
 
 
     private final String PATH = "/members";
-
-//            mvc.perform(get(BASE_PATH + path)
-//                        .params(historySearch))
-//            .andExpect(status().isBadRequest())
-//            .andExpect((rslt) ->
-//    assertTrue(rslt.getResolvedException().getClass().isAssignableFrom(IllegalArgumentException.class)))
-//            .andDo(print())
-//            .andReturn();
-
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -94,6 +82,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원가입 - 중복된 닉네임으로 회원가입에 실패한다.")
     void registerMember_duplicate_nickname_failure() throws Exception {
+
 
     }
 

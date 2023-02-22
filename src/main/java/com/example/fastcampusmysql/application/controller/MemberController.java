@@ -1,12 +1,16 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.application.common.exception.ErrorResponse;
+import com.example.fastcampusmysql.application.utils.ExceptionHandlerUtil;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.dto.MemberNicknameHistoryDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.service.MemberReadService;
 import com.example.fastcampusmysql.domain.member.service.MemberWriteService;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,5 +44,12 @@ public class MemberController {
     @GetMapping("/{memberId}/nickname-histories")
     public List<MemberNicknameHistoryDto> getNicknameHistories(@PathVariable Long memberId) {
         return memberReadService.getNickNameHistories(memberId);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        ErrorResponse errorResponse = ExceptionHandlerUtil.createError(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
