@@ -1,9 +1,11 @@
 package com.example.fastcampusmysql.domain.member.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.Builder;
 
 import javax.validation.constraints.Size;
-
 import java.time.LocalDate;
 
 public record MemberDto(
@@ -11,7 +13,9 @@ public record MemberDto(
         String email,
         @Size(max= 10)
         String nickname,
-        LocalDate birthDay
+        @JsonDeserialize(using = LocalDateDeserializer.class)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate birthday
 ) {
         @Builder
         public record RegisterMemberCommand(
