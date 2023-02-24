@@ -28,4 +28,15 @@ public class GetTimeLinePostUsecase {
 
         return postReadService.getPosts(followingMemberIds, cursorRequest);
     }
+
+    public PageCursor<Post> executeByTimeLine(Long memberId, CursorRequest cursorRequest) {
+        /*
+            1. TimeLine테이블 조회
+            2. 1번에 해당하는 게시물을 조회한다.
+         */
+        List<Follow> followings = followReadService.getFollowings(memberId);
+        List<Long> followingMemberIds = followings.stream().map(Follow::getToMemberId).toList();
+
+        return postReadService.getPosts(followingMemberIds, cursorRequest);
+    }
 }
