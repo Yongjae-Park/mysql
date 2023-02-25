@@ -47,23 +47,21 @@ public class TimelineRepository {
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
-    public List<Timeline> findAllByInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, int size) {
-        if (memberIds.isEmpty())
-            return List.of();
-
-        String query = String.format("""
+    public List<Timeline> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size) {
+        var sql = String.format("""
                 SELECT *
                 FROM %s
-                WHERE memberId IN (:memberIds)
+                WHERE memberId = :memberId and id < :id
                 ORDER BY id desc
                 LIMIT :size
                 """, TABLE);
 
         var params = new MapSqlParameterSource()
-                .addValue("memberIds", memberIds)
-                .addValue("size", size);
-
-        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+                .addValue("memberId", memberId)
+                .addValue("id", id)
+                .addValue("size", size)
+                ;
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
 
     public Timeline save(Timeline timeline) {
