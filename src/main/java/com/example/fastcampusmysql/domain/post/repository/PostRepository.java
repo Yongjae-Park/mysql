@@ -5,7 +5,10 @@ import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,6 +21,7 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,6 +35,7 @@ public class PostRepository {
             .memberId(resultSet.getLong("memberId"))
             .contents(resultSet.getString("contents"))
             .createdDate(resultSet.getObject("createdDate", LocalDate.class))
+            .likeCount(resultSet.getLong("likeCount"))
             .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
             .build();
 
@@ -115,6 +120,22 @@ public class PostRepository {
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
+    public List<Post> findAllByInId(List<Long> ids) {
+        if (ids.isEmpty())
+            return List.of();
+
+        String query = String.format("""
+                SELECT *
+                FROM %s
+                WHERE id in (:ids)
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("ids", ids);
+
+        return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
+    }
+
     public List<Post> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size) {
         String query = String.format("""
                 SELECT *
@@ -152,6 +173,27 @@ public class PostRepository {
         return namedParameterJdbcTemplate.query(query, params, ROW_MAPPER);
     }
 
+    /*
+        TODO : jpa에서 어노테이션 사용으로 for update 설정 추가
+     */
+    public Optional<Post> findById(Long postId, Boolean requiredLock) {
+        String sql = String.format("""
+                SELECT *
+                FROM %s
+                WHERE id = :postId
+                """, TABLE);
+        if (requiredLock)
+            sql += "FOR UPDATE";
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("postId", postId);
+
+
+        Post nullablePost = namedParameterJdbcTemplate.queryForObject(sql, params, ROW_MAPPER);
+
+        return Optional.ofNullable(nullablePost);
+    }
+
     private Long getCount(Long memberId) {
         String sql = String.format("""
                 SELECT count(id)
@@ -181,8 +223,7 @@ public class PostRepository {
     public Post save(Post post) {
         if (post.getId() == null)
             return insert(post);
-        //TODO : 게시물 수정 메소드 추가
-        throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
+        return update(post);
     }
 
     private Post insert(Post post) {
@@ -200,6 +241,21 @@ public class PostRepository {
                 .createdDate(post.getCreatedDate())
                 .createdAt(post.getCreatedAt())
                 .build();
+    }
+
+    private Post update(Post post) {
+        String sql = String.format("""
+                UPDATE %s SET 
+                 memberId= :memberId,
+                 contents= :contents,
+                 createdDate= :createdDate,
+                 likeCount= :likeCount,
+                 createdAt= :createdAt
+                 WHERE id= :id"
+                """,TABLE);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(post);
+        namedParameterJdbcTemplate.update(sql, params);
+        return post;
     }
 
 }
