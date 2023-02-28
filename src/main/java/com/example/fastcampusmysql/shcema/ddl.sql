@@ -63,4 +63,6 @@ create index POST__index_member_id_created_date
     on POST (memberId, createdDate);
 
 
+alter table post add column version int default 0;
+
 

@@ -37,6 +37,7 @@ public class PostRepository {
             .createdDate(resultSet.getObject("createdDate", LocalDate.class))
             .likeCount(resultSet.getLong("likeCount"))
             .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
+            .version(resultSet.getLong("version"))
             .build();
 
     public List<DailyPostCount> groupByCreatedDate(DailyPostCountRequest request) {
@@ -250,11 +251,21 @@ public class PostRepository {
                  contents= :contents,
                  createdDate= :createdDate,
                  likeCount= :likeCount,
-                 createdAt= :createdAt
-                 WHERE id= :id"
+                 createdAt= :createdAt,
+                 version = :version + 1
+                WHERE id= :id AND version= :version"
                 """,TABLE);
         SqlParameterSource params = new BeanPropertySqlParameterSource(post);
-        namedParameterJdbcTemplate.update(sql, params);
+        int updatedCount = namedParameterJdbcTemplate.update(sql, params);
+
+        if (updatedCount == 0) {
+            /*
+                TODO : throw 버전 충돌 Exception
+                    재시도와 같은 exception handling
+             */
+            throw new RuntimeException("갱신 실패");
+        }
+
         return post;
     }
 
