@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.application.controller;
 
+import com.example.fastcampusmysql.application.usecase.CreatePostLikeUsecase;
 import com.example.fastcampusmysql.application.usecase.CreatePostUsecase;
 import com.example.fastcampusmysql.application.usecase.GetTimeLinePostUsecase;
 import com.example.fastcampusmysql.application.utils.CursorRequest;
@@ -29,6 +30,8 @@ public class PostController {
 
     final private CreatePostUsecase createPostUsecase;
 
+    final private CreatePostLikeUsecase createPostLikeUsecase;
+
     @PostMapping("")
     public Long register(PostDto postDto) {
         return createPostUsecase.execute(postDto);
@@ -40,7 +43,7 @@ public class PostController {
     }
 
     @GetMapping("/members/{memberId}")
-    public Page<Post> getPost(
+    public Page<PostDto> getPost(
             @PathVariable Long memberId,
             Pageable pageable
     ) {
@@ -68,8 +71,13 @@ public class PostController {
         postWriteService.likePost(postId);
     }
 
-    @PostMapping("{postId}/like/optimistic")
-    public void likePostOptimisticLock(@PathVariable Long postId) {
+    @PostMapping("{postId}/like/v2")
+    public void likePostV2(@PathVariable Long postId) {
         postWriteService.likePostByOptimisticLock(postId);
+    }
+
+    @PostMapping("/{postId}/like/v3")
+    public void likePostV3(@PathVariable Long postId, @RequestParam Long memberId) {
+        createPostLikeUsecase.execute(postId, memberId);
     }
 }

@@ -4,7 +4,9 @@ import com.example.fastcampusmysql.application.utils.CursorRequest;
 import com.example.fastcampusmysql.application.utils.PageCursor;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
+import com.example.fastcampusmysql.domain.post.dto.PostDto;
 import com.example.fastcampusmysql.domain.post.entity.Post;
+import com.example.fastcampusmysql.domain.post.repository.PostLikeRepository;
 import com.example.fastcampusmysql.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,8 @@ import java.util.List;
 public class PostReadService {
     final private PostRepository postRepository;
 
+    final private PostLikeRepository postLikeRepository;
+
     public List<DailyPostCount> getDailyPostCounts(DailyPostCountRequest request) {
         /*
             반환 값 -> 리스트 (작성일자, 작성회원, 작성 게시물 갯수)
@@ -30,8 +34,24 @@ public class PostReadService {
     }
 
     //TODO : dto로 반환
-    public Page<Post> getPosts(Long memberId, Pageable pageable) {
-        return postRepository.findAllByMemberId(memberId, pageable);
+//    public Page<Post> getPosts(Long memberId, Pageable pageable) {
+//        return postRepository.findAllByMemberId(memberId, pageable);
+//    }
+
+    public Page<PostDto> getPosts(Long memberId, Pageable pageRequest) {
+        return postRepository.findAllByMemberId(memberId, pageRequest)
+                .map(this::toDto);
+    }
+
+    private PostDto toDto(Post post) {
+        return new PostDto(
+                post.getId(),
+                post.getContents(),
+                post.getCreatedAt(),
+                postLikeRepository.count(post.getId()));
+    }
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId, false).orElseThrow();
     }
 
     public PageCursor<Post> getPosts(Long memberId, CursorRequest cursorRequest) {

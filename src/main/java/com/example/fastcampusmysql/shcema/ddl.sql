@@ -65,4 +65,15 @@ create index POST__index_member_id_created_date
 
 alter table post add column version int default 0;
 
+create table PostLike
+(
+    id int auto_increment,
+    memberId int not null,
+    postId int not null,
+    createdAt datetime not null,
+    constraint POstLike_id_uindex
+        primary key (id)
+);
+
+
 
