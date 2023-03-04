@@ -16,16 +16,17 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
 class MemberRepositoryTest {
 
     @Autowired
-    private MemberRepository memberRepository;
+//    private MemberRepository memberRepository;
+    private MemberJpaRepository memberJpaRepository;
 
-    private int COUNT = 1000;
+    private int COUNT = 4;
 
     List<Member> memberDatas;
     List<String> names;
@@ -48,7 +49,7 @@ class MemberRepositoryTest {
                 .map(Member::getNickname)
                 .collect(Collectors.toList());
 
-        memberRepository.saveAll(memberDatas);
+        memberJpaRepository.saveAll(memberDatas);
     }
 
     @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 COUNT + 3이다.")
@@ -64,9 +65,9 @@ class MemberRepositoryTest {
         members.add(member2);
         members.add(member3);
 
-        memberRepository.saveAll(members);
+        memberJpaRepository.saveAll(members);
 
-        List<Member> all = memberRepository.findAll();
+        List<Member> all = memberJpaRepository.findAll();
 
         assertThat(all.size()).isEqualTo(COUNT + 3);
     }
@@ -76,30 +77,27 @@ class MemberRepositoryTest {
     void findById_Test() {
         Member member = createMember();
 
-        Optional<Member> findMember = memberRepository.findById(member.getId());
+        Optional<Member> findMember = memberJpaRepository.findById(member.getId());
 
         assertThat(findMember.orElseThrow().getId()).isEqualTo(member.getId());
     }
 
-    Member createMember() {
+    private Member createMember() {
         Member member = Member.builder()
                 .nickname("yongjae")
                 .email("yongjae@gmail.com")
                 .birthday(LocalDate.of(1992,04,14))
                 .build();
 
-        return memberRepository.save(member);
+        return memberJpaRepository.save(member);
     }
 
-    @DisplayName("없는 id의 경우 null을 반환받는다.")
+    @DisplayName("없는 id의 경우 Optional.empty를 반환받는다.")
     @Test()
     void findById_InvalidId_Test() {
-//        assertThrows(EmptyResultDataAccessException.class, () -> {
-//            memberRepository.findById(-1L);
-//        });
-        Optional<Member> findMember = memberRepository.findById(-1L);
+        Optional<Member> findMember = memberJpaRepository.findById(-1L);
 
-        assertNull(findMember);
+        assertTrue(findMember.isEmpty());
     }
 
     @DisplayName("IN조건 만족하는 멤버를 전체 조회한다.")
@@ -107,22 +105,22 @@ class MemberRepositoryTest {
     void findAllByIdIn_Test() {
         List<Long> ids = new ArrayList<>();
 
-        Long start = memberRepository.findAll().get(0).getId();
+        Long start = memberJpaRepository.findAll().get(0).getId();
         int tc = 3;
 
         for (int i = 1; i <= tc; i++) {
             ids.add(Long.valueOf(start + i));
         }
 
-        List<Member> findMembers = memberRepository.findAllByIdIn(ids);
+        List<Member> findMembers = memberJpaRepository.findAllByIdIn(ids);
 
-        assertThat(findMembers.size()).isEqualTo(3);
+        assertThat(findMembers.size()).isEqualTo(tc);
     }
 
     @DisplayName("조회한 전체 멤버 수가 초기 셋팅한 멤버의 수와 같다.")
     @Test
     void findAll_Test() {
-        List<Member> findMembers = memberRepository.findAll();
+        List<Member> findMembers = memberJpaRepository.findAll();
 
         int findMemberSize = findMembers.size();
 
@@ -134,9 +132,8 @@ class MemberRepositoryTest {
     void save_Test() {
         Member member = createMember();
 
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = memberJpaRepository.save(member);
 
         assertThat(member.getId()).isEqualTo(savedMember.getId());
-
     }
 }

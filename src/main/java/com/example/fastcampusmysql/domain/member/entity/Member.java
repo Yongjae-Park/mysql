@@ -3,45 +3,47 @@ package com.example.fastcampusmysql.domain.member.entity;
 import com.example.fastcampusmysql.application.utils.FieldUtils;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.util.Assert;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
+@Entity
+@NoArgsConstructor
 public class Member {
 
-    final private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String nickname;
 
-    final private String email;
+    private String email;
 
-    final private LocalDate birthday;
+    private LocalDate birthday;
 
-    final private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    final private static Long NAME_MAX_LENGTH = 10L;
+    private static Long NAME_MAX_LENGTH = 10L;
 
     @Builder
     public Member(Long id, String nickname, String email, LocalDate birthday, LocalDateTime createdAt) {
         this.id = id;
         this.email = Objects.requireNonNull(email);
         this.birthday = Objects.requireNonNull(birthday);
-//        validateNickname(nickname);
         this.nickname = Objects.requireNonNull(nickname);
         this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
-//    private void validateNickname(String nickname) {
-//        //TODO : 커스텀 익셉션 추가로 변경
-//        Assert.isTrue(nickname.length() <= NAME_MAX_LENGTH, "최대 길이를 초과했습니다.");
-//    }
+
 
     public void changeNickname(String to) {
         Objects.requireNonNull(to);
-//        validateNickname(to);
         nickname = to;
     }
 }
