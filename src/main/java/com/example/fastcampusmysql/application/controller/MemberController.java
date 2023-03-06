@@ -46,10 +46,5 @@ public class MemberController {
         return memberReadService.getNickNameHistories(memberId);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
-        String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        ErrorResponse errorResponse = ExceptionHandlerUtil.createError(message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+
 }
