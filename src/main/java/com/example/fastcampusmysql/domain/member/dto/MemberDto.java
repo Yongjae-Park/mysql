@@ -1,5 +1,6 @@
 package com.example.fastcampusmysql.domain.member.dto;
 
+import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -7,6 +8,7 @@ import lombok.Builder;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record MemberDto(
         Long id,
@@ -24,6 +26,14 @@ public record MemberDto(
                 String nickname,
                 LocalDate birthday
         ) {
+                public Member toEntity() {
+                        return Member.builder()
+                                .nickname(this.nickname)
+                                .email(this.email)
+                                .birthday(this.birthday)
+                                .createdAt(LocalDateTime.now())
+                                .build();
+                }
         }
 
 }
