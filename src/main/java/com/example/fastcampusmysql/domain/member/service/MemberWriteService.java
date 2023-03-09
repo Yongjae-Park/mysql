@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.domain.member.service;
 
 import com.example.fastcampusmysql.application.common.exception.member.DuplicateEmailException;
+import com.example.fastcampusmysql.application.common.exception.member.DuplicateNicknameException;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.entity.MemberNicknameHistory;
@@ -38,7 +39,7 @@ public class MemberWriteService {
                 .build();
 
         if (checkDuplicateNickname(command.nickname())) {
-             throw new DuplicateEmailException("닉네임 중복");
+             throw new DuplicateNicknameException("닉네임 중복");
         }
 
         if (checkDuplicateEmail(command.email())) {
@@ -53,21 +54,11 @@ public class MemberWriteService {
     }
 
     private boolean checkDuplicateNickname(String nickname) {
-        Optional<Member> memberByNickname = memberJpaRepository.findByNickname(nickname);
-
-        if (memberByNickname.isEmpty()) {
-            return false;
-        }
-        return true;
+        return memberJpaRepository.existsByNickname(nickname);
     }
 
     private boolean checkDuplicateEmail(String email) {
-        Optional<Member> memberByEmail = memberJpaRepository.findByEmail(email);
-
-        if (memberByEmail.isEmpty()) {
-            return false;
-        }
-        return true;
+        return memberJpaRepository.existsByEmail(email);
     }
 
 

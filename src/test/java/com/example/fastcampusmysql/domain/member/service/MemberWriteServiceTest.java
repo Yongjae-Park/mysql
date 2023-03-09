@@ -3,8 +3,8 @@ package com.example.fastcampusmysql.domain.member.service;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.entity.MemberNicknameHistory;
-import com.example.fastcampusmysql.domain.member.repository.MemberNicknameHistoryRepository;
-import com.example.fastcampusmysql.domain.member.repository.MemberRepository;
+import com.example.fastcampusmysql.domain.member.repository.MemberJpaRepository;
+import com.example.fastcampusmysql.domain.member.repository.MemberNickNameHistoryJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,10 +26,12 @@ class MemberWriteServiceTest {
     MemberWriteService memberWriteService;
 
     @Autowired
-    MemberRepository memberRepository;
+//    MemberRepository memberRepository;
+    MemberJpaRepository memberJpaRepository;
 
     @Autowired
-    MemberNicknameHistoryRepository memberNicknameHistoryRepository;
+//    MemberNicknameHistoryRepository memberNicknameHistoryRepository;
+    MemberNickNameHistoryJpaRepository memberNickNameHistoryJpaRepository;
 
     MemberDto.RegisterMemberCommand memberDto;
 
@@ -42,18 +44,18 @@ class MemberWriteServiceTest {
         memberDto = new MemberDto.RegisterMemberCommand(email, nickname, birthDay);
     }
 
-    @DisplayName("íšŒì› ë“±ë¡ í›„ ì¡°íšŒí•œ idê°€ ê°™ë‹¤.")
+    @DisplayName("È¸¿ø µî·Ï ÈÄ Á¶È¸ÇÑ id°¡ °°´Ù.")
     @Test
     void register_Test() {
         Member registeredMember = memberWriteService.register(memberDto);
 
-        Optional<Member> findMember = memberRepository.findById(registeredMember.getId());
+        Optional<Member> findMember = memberJpaRepository.findById(registeredMember.getId());
 
         assertThat(findMember.get().getId()).isEqualTo(registeredMember.getId());
     }
 
 
-    @DisplayName("íšŒì› ì´ë¦„ì´ ë³€ê²½ë˜ì–´ ì €ì¥ëœë‹¤.")
+    @DisplayName("È¸¿ø ÀÌ¸§ÀÌ º¯°æµÇ¾î ÀúÀåµÈ´Ù.")
     @Test
     void changeNickname_Test() {
         Member registeredMember = memberWriteService.register(memberDto);
@@ -61,13 +63,13 @@ class MemberWriteServiceTest {
 
         memberWriteService.changeNickname(registeredMember.getId(), changeNickname);
 
-        Optional<Member> findMember = memberRepository.findById(registeredMember.getId());
-        //ë³€ê²½ëœ ê²ƒ í™•ì¸
-        //íˆìŠ¤í† ë¦¬ í™•ì¸
+        Optional<Member> findMember = memberJpaRepository.findById(registeredMember.getId());
+        //º¯°æµÈ °Í È®ÀÎ
+        //È÷½ºÅä¸® È®ÀÎ
         assertThat(findMember.get().getNickname()).isEqualTo(changeNickname);
     }
 
-    @DisplayName("íšŒì› ì´ë¦„ì´ ë³€ê²½ë˜ì–´ ë‚´ì—­ì´ ì €ì¥ëœë‹¤.")
+    @DisplayName("È¸¿ø ÀÌ¸§ÀÌ º¯°æµÇ¾î ³»¿ªÀÌ ÀúÀåµÈ´Ù.")
     @Test
     void changeNickname_History_Test() {
         Member registeredMember = memberWriteService.register(memberDto);
@@ -75,9 +77,9 @@ class MemberWriteServiceTest {
 
         memberWriteService.changeNickname(registeredMember.getId(), changeNickname);
 
-        Optional<Member> findMember = memberRepository.findById(registeredMember.getId());
+        Optional<Member> findMember = memberJpaRepository.findById(registeredMember.getId());
 
-        List<MemberNicknameHistory> histories = memberNicknameHistoryRepository.findAllByMemberId(findMember.get().getId());
+        List<MemberNicknameHistory> histories = memberNickNameHistoryJpaRepository.findAllByMemberId(findMember.get().getId());
 
         MemberNicknameHistory history = histories.get(0);
 
