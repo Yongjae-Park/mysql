@@ -1,5 +1,7 @@
 package com.example.fastcampusmysql.domain.member.service;
 
+import com.example.fastcampusmysql.application.common.exception.member.DuplicateEmailException;
+import com.example.fastcampusmysql.application.common.exception.member.DuplicateNicknameException;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.entity.MemberNicknameHistory;
@@ -13,10 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -26,11 +29,9 @@ class MemberWriteServiceTest {
     MemberWriteService memberWriteService;
 
     @Autowired
-//    MemberRepository memberRepository;
     MemberJpaRepository memberJpaRepository;
 
     @Autowired
-//    MemberNicknameHistoryRepository memberNicknameHistoryRepository;
     MemberNickNameHistoryJpaRepository memberNickNameHistoryJpaRepository;
 
     MemberDto.RegisterMemberCommand memberDto;
@@ -54,6 +55,45 @@ class MemberWriteServiceTest {
         assertThat(findMember.get().getId()).isEqualTo(registeredMember.getId());
     }
 
+    @DisplayName("회원가입 실패 - 이메일 중복으로 회원가입에 실패한다.")
+    @Test
+    public void emailDuplicate() {
+        MemberDto.RegisterMemberCommand memberCommand = MemberDto.RegisterMemberCommand.builder()
+                        .email("yyy@gmail.com")
+                        .nickname("yyy")
+                        .birthday(LocalDate.of(1992, 4, 14))
+                        .build();
+
+        MemberDto.RegisterMemberCommand emailDuplicatedCommand = MemberDto.RegisterMemberCommand.builder()
+                .email("yyy@gmail.com")
+                .nickname("zzz")
+                .birthday(LocalDate.of(1992, 4, 14))
+                .build();
+
+        memberWriteService.register(memberCommand);
+
+        assertThrows(DuplicateEmailException.class, () -> memberWriteService.register(emailDuplicatedCommand));
+    }
+
+    @DisplayName("회원가입 실패 - 이메일 중복으로 회원가입에 실패한다.")
+    @Test
+    public void nicknameDuplicate() {
+        MemberDto.RegisterMemberCommand memberCommand = MemberDto.RegisterMemberCommand.builder()
+                .email("yyy@gmail.com")
+                .nickname("yyy")
+                .birthday(LocalDate.of(1992, 4, 14))
+                .build();
+
+        MemberDto.RegisterMemberCommand nicknameDuplicatedCommand = MemberDto.RegisterMemberCommand.builder()
+                .email("zzz@gmail.com")
+                .nickname("yyy")
+                .birthday(LocalDate.of(1992, 4, 14))
+                .build();
+
+        memberWriteService.register(memberCommand);
+
+        assertThrows(DuplicateNicknameException.class, () -> memberWriteService.register(nicknameDuplicatedCommand));
+    }
 
     @DisplayName("회원 이름이 변경되어 저장된다.")
     @Test
@@ -77,12 +117,8 @@ class MemberWriteServiceTest {
 
         memberWriteService.changeNickname(registeredMember.getId(), changeNickname);
 
-        Optional<Member> findMember = memberJpaRepository.findById(registeredMember.getId());
+        MemberNicknameHistory findHistory = memberNickNameHistoryJpaRepository.findByMemberIdAndNickname(registeredMember.getId(), registeredMember.getNickname()).orElseThrow();
 
-        List<MemberNicknameHistory> histories = memberNickNameHistoryJpaRepository.findAllByMemberId(findMember.get().getId());
-
-        MemberNicknameHistory history = histories.get(0);
-
-        assertThat(history.getNickname()).isEqualTo(changeNickname);
+        assertThat(findHistory.getNickname()).isEqualTo(changeNickname);
     }
 }
