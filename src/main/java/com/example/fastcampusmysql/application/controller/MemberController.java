@@ -27,7 +27,7 @@ public class MemberController {
     @PostMapping()
     public MemberDto register(@RequestBody @Valid MemberDto.RegisterMemberCommand command) {
         Member member = memberWriteService.register(command);
-        return memberReadService.toDto(member);
+        return Member.toDto(member);
     }
 
     @GetMapping("/{id}")

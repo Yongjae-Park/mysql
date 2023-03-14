@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.domain.member.entity;
 
 import com.example.fastcampusmysql.application.utils.FieldUtils;
+import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,10 +41,13 @@ public class Member {
         this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
-
-
     public void changeNickname(String to) {
         Objects.requireNonNull(to);
         nickname = to;
     }
+
+    public static MemberDto toDto(Member member) {
+        return new MemberDto(member.getId(), member.getEmail(), member.getNickname(), member.getBirthday());
+    }
+
 }
