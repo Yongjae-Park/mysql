@@ -1,21 +1,30 @@
 package com.example.fastcampusmysql.domain.member.entity;
 
 import com.example.fastcampusmysql.application.utils.FieldUtils;
+import com.example.fastcampusmysql.domain.member.dto.MemberNicknameHistoryDto;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
+@Entity
+@NoArgsConstructor
 public class MemberNicknameHistory {
 
-    final private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    final private Long memberId;
-    final private String nickname;
+    private Long memberId;
+    private String nickname;
 
-    final private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Builder
     public MemberNicknameHistory(Long id, Long memberId, String nickname, LocalDateTime createdAt) {
@@ -25,4 +34,12 @@ public class MemberNicknameHistory {
         this.createdAt = FieldUtils.getLocalDateTime(createdAt);
     }
 
+    public static MemberNicknameHistoryDto toDto(MemberNicknameHistory history) {
+        return new MemberNicknameHistoryDto(
+                history.getId(),
+                history.getMemberId(),
+                history.getNickname(),
+                history.getCreatedAt()
+        );
+    }
 }
