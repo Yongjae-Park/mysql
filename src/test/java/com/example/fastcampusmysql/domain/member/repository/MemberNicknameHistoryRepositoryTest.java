@@ -2,7 +2,6 @@ package com.example.fastcampusmysql.domain.member.repository;
 
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.entity.MemberNicknameHistory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,67 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 class MemberNicknameHistoryRepositoryTest {
 
     @Autowired
-    MemberNicknameHistoryRepository memberNicknameHistoryRepository;
+    MemberNickNameHistoryJpaRepository memberNicknameHistoryJpaRepository;
     @Autowired
-    MemberRepository memberRepository;
+    MemberJpaRepository memberJpaRepository;
 
-    Member member;
-
-    MemberNicknameHistory sampleHistory;
-
-    @BeforeEach
-    void setUp() {
-//        saveMember();
-        Member member = Member.builder()
-                .nickname("initial")
-                .email("first@nickname")
-                .birthday(LocalDate.now())
-                .build();
-
-        Member savedMember = memberRepository.save(member);
-
-        Optional<Member> findMember = memberRepository.findById(savedMember.getId());
-        this.member = findMember.orElseThrow();
-
-//        saveSampleHistory();
-    }
-
-    private void saveSampleHistory() {
-        MemberNicknameHistory history = MemberNicknameHistory.builder()
-                .memberId(this.member.getId())
-                .nickname("change")
-                .build();
-
-        this.sampleHistory = memberNicknameHistoryRepository.save(history);
-    }
-
-    private void saveMember() {
-        Member member = Member.builder()
-                .nickname("initial")
-                .email("first@nickname")
-                .birthday(LocalDate.now())
-                .build();
-
-        Member savedMember = memberRepository.save(member);
-
-        Optional<Member> findMember = memberRepository.findById(savedMember.getId());
-        this.member = findMember.orElseThrow();
-    }
-
-    @DisplayName("회원이 닉네임을 변경한 횟수를 조회한다.")
+    @DisplayName("회원 id로 닉네임 변경내역을 조회한다.")
     @Test
     void findAllByMemberId_Test() {
-        //member.changeNickname("firstTime")
+        Member member = saveMember();
 
         int TC = 3;
 
@@ -82,10 +36,10 @@ class MemberNicknameHistoryRepositoryTest {
                             .memberId(member.getId())
                             .nickname(member.getNickname())
                             .build();
-            memberNicknameHistoryRepository.save(history);
+            memberNicknameHistoryJpaRepository.save(history);
         }
 
-        List<MemberNicknameHistory> histories = memberNicknameHistoryRepository.findAllByMemberId(member.getId());
+        List<MemberNicknameHistory> histories = memberNicknameHistoryJpaRepository.findAllByMemberId(member.getId());
 
         assertThat(histories.size()).isEqualTo(TC);
     }
@@ -94,6 +48,7 @@ class MemberNicknameHistoryRepositoryTest {
     @Test
     void save_Test() {
         String changeNickname = "change";
+        Member member = saveMember();
         member.changeNickname(changeNickname);
 
         MemberNicknameHistory history = MemberNicknameHistory.builder()
@@ -101,22 +56,41 @@ class MemberNicknameHistoryRepositoryTest {
                 .nickname(member.getNickname())
                 .build();
 
-        MemberNicknameHistory savedHistory = memberNicknameHistoryRepository.save(history);
+        MemberNicknameHistory savedHistory = memberNicknameHistoryJpaRepository.save(history);
 
         assertThat(savedHistory.getNickname()).isEqualTo(changeNickname);
     }
 
-    @DisplayName("MemberNicknameHistory는 갱신을 지원하지 않는다.")
+    @DisplayName("회원 id와 닉네임으로 닉네임 변경내역을 조회한다.")
     @Test
-    void save_UnsupportedOperationException_Test() {
+    void findByMemberIdAndNickname_Test() {
+        Member member = saveMember();
+        String changeNickname = "changed";
+
+        member.changeNickname(changeNickname);
+
         MemberNicknameHistory history = MemberNicknameHistory.builder()
-                .id(1L)
                 .memberId(member.getId())
-                .nickname("change")
+                .nickname(member.getNickname())
+                .build();
+        memberNicknameHistoryJpaRepository.save(history);
+
+        MemberNicknameHistory findHistory = memberNicknameHistoryJpaRepository.findByMemberIdAndNickname(
+                member.getId(), member.getNickname()).orElseThrow();
+
+        assertThat(findHistory.getNickname()).isEqualTo(changeNickname);
+    }
+
+    private Member saveMember() {
+        Member member = Member.builder()
+                .nickname("initial")
+                .email("first@nickname")
+                .birthday(LocalDate.now())
                 .build();
 
-        assertThrows(UnsupportedOperationException.class, () -> {
-            memberNicknameHistoryRepository.save(history);
-        });
+        Member savedMember = memberJpaRepository.save(member);
+
+        return savedMember;
     }
+
 }
