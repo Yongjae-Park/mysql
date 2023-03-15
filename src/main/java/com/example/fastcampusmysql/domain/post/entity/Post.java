@@ -3,12 +3,19 @@ package com.example.fastcampusmysql.domain.post.entity;
 import com.example.fastcampusmysql.application.utils.FieldUtils;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
+@Entity
+@NoArgsConstructor
 public class Post {
 
     /**
@@ -16,13 +23,15 @@ public class Post {
      *  게시물 수정
      */
 
-    final private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    final private Long memberId;
+    private Long memberId;
 
-    final private String contents;
+    private String contents;
 
-    final private LocalDate createdDate;
+    private LocalDate createdDate;
 
     /*
         TODO : 1초에 한번씩 likeCount 값을 주기적으로 넣어줌.
@@ -34,7 +43,7 @@ public class Post {
 
     private Long version;
 
-    final private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Builder
     public Post(Long id, Long memberId, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {

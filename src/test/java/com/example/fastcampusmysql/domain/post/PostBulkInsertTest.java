@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.domain.post;
 
 import com.example.fastcampusmysql.domain.post.entity.Post;
+import com.example.fastcampusmysql.domain.post.repository.PostJpaRepository;
 import com.example.fastcampusmysql.domain.post.repository.PostRepository;
 import com.example.fastcampusmysql.util.PostFixtureFactory;
 import org.jeasy.random.EasyRandom;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -21,8 +23,8 @@ import java.util.stream.IntStream;
 public class PostBulkInsertTest {
 
     @Autowired
-    private PostRepository postRepository;
-
+//    private PostRepository postRepository;
+    private PostJpaRepository postJpaRepository;
     @Test
     @Disabled
     @Rollback(false)
@@ -36,7 +38,7 @@ public class PostBulkInsertTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        int _TEN_THOUSAND = 10000;
+        int _TEN_THOUSAND = 1;
         List<Post> posts = IntStream.range(0, _TEN_THOUSAND * 100)
                 .parallel()
                 .mapToObj(i -> easyRandom.nextObject(Post.class))
@@ -48,9 +50,11 @@ public class PostBulkInsertTest {
         StopWatch queryStopWatch = new StopWatch();
         queryStopWatch.start();
 
-        postRepository.bulkInsert(posts);
+//        postRepository.bulkInsert(posts);
+        postJpaRepository.saveAll(posts);
         queryStopWatch.stop();
         System.out.println("DB 인서트 시간 : " + queryStopWatch.getTotalTimeSeconds());
-
     }
+
+
 }
