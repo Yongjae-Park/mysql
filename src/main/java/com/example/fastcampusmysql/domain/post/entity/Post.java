@@ -1,21 +1,21 @@
 package com.example.fastcampusmysql.domain.post.entity;
 
-import com.example.fastcampusmysql.application.utils.FieldUtils;
+import com.example.fastcampusmysql.domain.member.entity.Member;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Post {
 
     /**
@@ -24,11 +24,13 @@ public class Post {
      */
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long memberId;
-
+//    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "memberId")
+    private Member member;
     private String contents;
 
     private LocalDate createdDate;
@@ -45,18 +47,22 @@ public class Post {
 
     private LocalDateTime createdAt;
 
-    @Builder
-    public Post(Long id, Long memberId, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {
-        this.id = id;
-        this.memberId = Objects.requireNonNull(memberId);
-        this.contents = Objects.requireNonNull(contents);
-        this.createdDate = FieldUtils.getLocalDate(createdDate);
-        this.likeCount = likeCount == null ? 0 : likeCount;
-        this.version = version == null ? 0 : version;
-        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
-    }
+//    @Builder
+//    public Post(Long id, Long memberId, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {
+//        this.id = id;
+//        this.memberId = Objects.requireNonNull(memberId);
+//        this.contents = Objects.requireNonNull(contents);
+//        this.createdDate = FieldUtils.getLocalDate(createdDate);
+//        this.likeCount = likeCount == null ? 0 : likeCount;
+//        this.version = version == null ? 0 : version;
+//        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
+//    }
 
     public void incrementLikeCount() {
         likeCount += 1;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
     }
 }

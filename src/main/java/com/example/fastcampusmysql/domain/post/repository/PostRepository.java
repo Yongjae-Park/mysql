@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.domain.post.repository;
 
 import com.example.fastcampusmysql.application.utils.PageHelper;
+import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.entity.Post;
@@ -32,7 +33,8 @@ public class PostRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     final static private RowMapper<Post> ROW_MAPPER = (ResultSet resultSet, int rowNum) -> Post.builder()
             .id(resultSet.getLong("id"))
-            .memberId(resultSet.getLong("memberId"))
+//            .memberId(resultSet.getLong("memberId"))
+            .member(resultSet.getObject("member", Member.class))
             .contents(resultSet.getString("contents"))
             .createdDate(resultSet.getObject("createdDate", LocalDate.class))
             .likeCount(resultSet.getLong("likeCount"))
@@ -237,7 +239,8 @@ public class PostRepository {
 
         return Post.builder()
                 .id(id)
-                .memberId(post.getMemberId())
+//                .memberId(post.getMemberId())
+                .member(post.getMember())
                 .contents(post.getContents())
                 .createdDate(post.getCreatedDate())
                 .createdAt(post.getCreatedAt())

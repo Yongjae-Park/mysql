@@ -21,7 +21,8 @@ public class CreatePostUsecase {
         var postId = postWriteService.create(command);
 
         var followerMemberIds = followReadService
-                .getFollowers(command.memberId()).stream()
+//                .getFollowers(command.memberId()).stream()
+                .getFollowers(command.member().getId()).stream()
                 .map((Follow::getFromMemberId))
                 .toList();
 

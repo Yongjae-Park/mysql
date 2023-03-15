@@ -1,16 +1,11 @@
 package com.example.fastcampusmysql.application.controller;
 
-import com.example.fastcampusmysql.application.common.exception.ErrorResponse;
-import com.example.fastcampusmysql.application.utils.ExceptionHandlerUtil;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.dto.MemberNicknameHistoryDto;
 import com.example.fastcampusmysql.domain.member.entity.Member;
 import com.example.fastcampusmysql.domain.member.service.MemberReadService;
 import com.example.fastcampusmysql.domain.member.service.MemberWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
