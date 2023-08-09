@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@Transactional
+@Transactional(readOnly = true)
 class MemberRepositoryTest {
 
     @Autowired
@@ -34,6 +35,7 @@ class MemberRepositoryTest {
     Long id = 1L;
 
     @BeforeEach
+    @Transactional
     void setUp() {
         memberDatas = LongStream.range(1, COUNT + 1)
                 .mapToObj(number ->
@@ -54,10 +56,12 @@ class MemberRepositoryTest {
 
     @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 COUNT + 3이다.")
     @Test
+    @Transactional
+    @Rollback(value = false)
     public void saveAll_Test() {
-        Member member1 = new Member(null, "yongjae1", "yy@hh", LocalDate.of(1992, 04, 14), null);
-        Member member2 = new Member(null, "yongjae2", "yy@hh", LocalDate.of(1992, 04, 14), null);
-        Member member3 = new Member(null, "yongjae3", "yy@hh", LocalDate.of(1992, 04, 14), null);
+        Member member1 = createMemberWithNickName("yongjae1");
+        Member member2 = createMemberWithNickName("yongjae2");
+        Member member3 = createMemberWithNickName("yongjae3");
 
         List<Member> members = new ArrayList<>();
 
@@ -67,9 +71,9 @@ class MemberRepositoryTest {
 
         memberJpaRepository.saveAll(members);
 
-        List<Member> all = memberJpaRepository.findAll();
+        List<Member> allMembers = memberJpaRepository.findAll();
 
-        assertThat(all.size()).isEqualTo(COUNT + 3);
+        assertThat(allMembers.size()).isEqualTo(COUNT + 3);
     }
 
     @DisplayName("멤버 인스턴스의 id와 생성 후 조회한 멤버 id 값이 같다.")
@@ -90,6 +94,16 @@ class MemberRepositoryTest {
                 .build();
 
         return memberJpaRepository.save(member);
+    }
+
+    private Member createMemberWithNickName(String nickName) {
+        Member member = Member.builder()
+                .nickname("yongjae")
+                .email("yongjae@gmail.com")
+                .birthday(LocalDate.of(1992,04,14))
+                .build();
+
+        return member;
     }
 
     @DisplayName("없는 id의 경우 Optional.empty를 반환받는다.")
