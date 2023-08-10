@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -27,7 +26,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    private Long memberId;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "memberId")
     private Member member;
@@ -37,10 +35,12 @@ public class Post {
 
     /*
         TODO : 1초에 한번씩 likeCount 값을 주기적으로 넣어줌.
+        like count를 주기적으로 넣어주는 스레드 추가
         조회시에는 현재 count값만 조회함.
         매번 조회시 카운트쿼리 -> 주기적인 카운트쿼리로 업데이트 반영
         조회시 쿼리 2번 -> 조회시 쿼리 1번
      */
+
     private Long likeCount;
 
     private Long version;
@@ -64,5 +64,9 @@ public class Post {
 
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public void versionUp() {
+        this.version++;
     }
 }
