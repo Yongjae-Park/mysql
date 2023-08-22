@@ -2,6 +2,7 @@ package com.example.fastcampusmysql.domain.member.entity;
 
 import com.example.fastcampusmysql.application.utils.FieldUtils;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
