@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -45,7 +44,7 @@ class MemberWriteServiceTest {
         memberDto = new MemberDto.RegisterMemberCommand(email, nickname, birthDay);
     }
 
-    @DisplayName("È¸¿ø µî·Ï ÈÄ Á¶È¸ÇÑ id°¡ °°´Ù.")
+    @DisplayName("íšŒì› ë“±ë¡ í›„ ì¡°íšŒí•œ idê°€ ê°™ë‹¤.")
     @Test
     void register_Test() {
         Member registeredMember = memberWriteService.register(memberDto);
@@ -55,14 +54,14 @@ class MemberWriteServiceTest {
         assertThat(findMember.get().getId()).isEqualTo(registeredMember.getId());
     }
 
-    @DisplayName("È¸¿ø°¡ÀÔ ½ÇÆĞ - ÀÌ¸ŞÀÏ Áßº¹À¸·Î È¸¿ø°¡ÀÔ¿¡ ½ÇÆĞÇÑ´Ù.")
+    @DisplayName("íšŒì›ê°€ì… ì‹¤íŒ¨ - ì´ë©”ì¼ ì¤‘ë³µìœ¼ë¡œ íšŒì›ê°€ì…ì— ì‹¤íŒ¨í•œë‹¤.")
     @Test
     public void emailDuplicate() {
         MemberDto.RegisterMemberCommand memberCommand = MemberDto.RegisterMemberCommand.builder()
-                        .email("yyy@gmail.com")
-                        .nickname("yyy")
-                        .birthday(LocalDate.of(1992, 4, 14))
-                        .build();
+                .email("yyy@gmail.com")
+                .nickname("yyy")
+                .birthday(LocalDate.of(1992, 4, 14))
+                .build();
 
         MemberDto.RegisterMemberCommand emailDuplicatedCommand = MemberDto.RegisterMemberCommand.builder()
                 .email("yyy@gmail.com")
@@ -75,7 +74,7 @@ class MemberWriteServiceTest {
         assertThrows(DuplicateEmailException.class, () -> memberWriteService.register(emailDuplicatedCommand));
     }
 
-    @DisplayName("È¸¿ø°¡ÀÔ ½ÇÆĞ - ÀÌ¸ŞÀÏ Áßº¹À¸·Î È¸¿ø°¡ÀÔ¿¡ ½ÇÆĞÇÑ´Ù.")
+    @DisplayName("íšŒì›ê°€ì… ì‹¤íŒ¨ - ì´ë©”ì¼ ì¤‘ë³µìœ¼ë¡œ íšŒì›ê°€ì…ì— ì‹¤íŒ¨í•œë‹¤.")
     @Test
     public void nicknameDuplicate() {
         MemberDto.RegisterMemberCommand memberCommand = MemberDto.RegisterMemberCommand.builder()
@@ -95,7 +94,7 @@ class MemberWriteServiceTest {
         assertThrows(DuplicateNicknameException.class, () -> memberWriteService.register(nicknameDuplicatedCommand));
     }
 
-    @DisplayName("È¸¿ø ÀÌ¸§ÀÌ º¯°æµÇ¾î ÀúÀåµÈ´Ù.")
+    @DisplayName("íšŒì› ì´ë¦„ì´ ë³€ê²½ë˜ì–´ ì €ì¥ëœë‹¤.")
     @Test
     void changeNickname_Test() {
         Member registeredMember = memberWriteService.register(memberDto);
@@ -104,12 +103,12 @@ class MemberWriteServiceTest {
         memberWriteService.changeNickname(registeredMember.getId(), changeNickname);
 
         Optional<Member> findMember = memberJpaRepository.findById(registeredMember.getId());
-        //º¯°æµÈ °Í È®ÀÎ
-        //È÷½ºÅä¸® È®ÀÎ
+        //ë³€ê²½ëœ ê²ƒ í™•ì¸
+        //íˆìŠ¤í† ë¦¬ í™•ì¸
         assertThat(findMember.get().getNickname()).isEqualTo(changeNickname);
     }
 
-    @DisplayName("È¸¿ø ÀÌ¸§ÀÌ º¯°æµÇ¾î ³»¿ªÀÌ ÀúÀåµÈ´Ù.")
+    @DisplayName("íšŒì› ì´ë¦„ì´ ë³€ê²½ë˜ì–´ ë‚´ì—­ì´ ì €ì¥ëœë‹¤.")
     @Test
     void changeNickname_History_Test() {
         Member registeredMember = memberWriteService.register(memberDto);

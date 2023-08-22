@@ -35,7 +35,7 @@ class MemberReadServiceTest {
     @Autowired
     MemberNickNameHistoryJpaRepository memberNickNameHistoryJpaRepository;
 
-    @DisplayName("È¸¿ø Id ·Î ¸â¹ö¸¦ Á¶È¸ÇÑ´Ù.")
+    @DisplayName("íšŒì› Id ë¡œ ë©¤ë²„ë¥¼ ì¡°íšŒí•œë‹¤.")
     @Test
     void getMember_Test() {
         Member member = createRegisterMemberCommand().toEntity();
@@ -56,7 +56,7 @@ class MemberReadServiceTest {
         return command;
     }
 
-    @DisplayName("Á¶È¸ ½ÇÆĞ - À¯È¿ÇÏÁö ¾ÊÀº È¸¿ø Id¸é Á¶È¸ ½ÇÆĞÇÑ´Ù.")
+    @DisplayName("ì¡°íšŒ ì‹¤íŒ¨ - ìœ íš¨í•˜ì§€ ì•Šì€ íšŒì› Idë©´ ì¡°íšŒ ì‹¤íŒ¨í•œë‹¤.")
     @Test
     void getMember_fail() {
         Long wrongMemberId = -1L;
@@ -69,7 +69,7 @@ class MemberReadServiceTest {
     void getMemberByEmail() {
     }
 
-    @DisplayName("È¸¿ø Id¸®½ºÆ®·Î È¸¿ø ¿©·¯¸íÀ» Á¶È¸ÇÑ´Ù.")
+    @DisplayName("íšŒì› Idë¦¬ìŠ¤íŠ¸ë¡œ íšŒì› ì—¬ëŸ¬ëª…ì„ ì¡°íšŒí•œë‹¤.")
     @Test
     void getMembers_Test() {
         List<Long> ids = new ArrayList<>();
@@ -90,11 +90,12 @@ class MemberReadServiceTest {
         }
 
         List<MemberDto> getMemberDtos = memberReadService.getMembers(ids);
+        System.out.println("toString: " + getMemberDtos.get(0).toString());
 
         assertThat(getMemberDtos.size()).isEqualTo(ids.size());
     }
 
-    @DisplayName("´Ğ³×ÀÓ º¯°æÀÌ·ÂÀ» Á¶È¸ÇÑ´Ù.")
+    @DisplayName("ë‹‰ë„¤ì„ ë³€ê²½ì´ë ¥ì„ ì¡°íšŒí•œë‹¤.")
     @Test
     void getNickNameHistories_Test() {
         MemberDto.RegisterMemberCommand memberCommand = createRegisterMemberCommand();
@@ -104,5 +105,4 @@ class MemberReadServiceTest {
 
         assertThat(historyDtos.size()).isEqualTo(1);
     }
-
 }
