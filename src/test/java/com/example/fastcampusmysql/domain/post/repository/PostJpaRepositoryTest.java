@@ -47,6 +47,7 @@ public class PostJpaRepositoryTest {
                 .nickname("invalid")
                 .email("invalid@gmail.com")
                 .birthday(LocalDate.of(1992, 4, 14))
+
                 .build();
 
         Post post = Post.builder()
@@ -83,19 +84,23 @@ public class PostJpaRepositoryTest {
 
     private void createPosts() {
         List<Post> posts = new ArrayList<>();
-        Post first_post = Post.builder()
-                .member(this.member)
-                .contents("test")
-                .build();
 
-        Post second_post = Post.builder()
-                .member(this.member)
-                .contents("test2")
-                .build();
+        Post first_post = createPostWithContents("test");
+        Post second_post = createPostWithContents("test2");
 
         posts.add(first_post);
         posts.add(second_post);
 
         postJpaRepository.saveAll(posts);
+    }
+
+    private Post createPostWithContents(String contents) {
+        Post post = Post.builder()
+                .member(this.member)
+                .contents(contents)
+                .version(1L)
+                .build();
+
+        return post;
     }
 }
