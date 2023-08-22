@@ -1,20 +1,17 @@
 package com.example.fastcampusmysql.domain.post.entity;
 
+import com.example.fastcampusmysql.application.utils.FieldUtils;
 import com.example.fastcampusmysql.domain.member.entity.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
 
     /**
@@ -43,20 +40,20 @@ public class Post {
 
     private Long likeCount;
 
-    private Long version;
+    private Long version = 0l;
 
     private LocalDateTime createdAt;
 
-//    @Builder
-//    public Post(Long id, Long memberId, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {
-//        this.id = id;
-//        this.memberId = Objects.requireNonNull(memberId);
-//        this.contents = Objects.requireNonNull(contents);
-//        this.createdDate = FieldUtils.getLocalDate(createdDate);
-//        this.likeCount = likeCount == null ? 0 : likeCount;
-//        this.version = version == null ? 0 : version;
-//        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
-//    }
+    @Builder
+    public Post(Long id, Member member, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {
+        this.id = id;
+        this.member = Objects.requireNonNull(member);
+        this.contents = Objects.requireNonNull(contents);
+        this.createdDate = FieldUtils.getLocalDate(createdDate);
+        this.likeCount = likeCount == null ? 0 : likeCount;
+        this.version = version == null ? 0 : version;
+        this.createdAt = FieldUtils.getLocalDateTime(createdAt);
+    }
 
     public void incrementLikeCount() {
         likeCount += 1;
@@ -66,7 +63,12 @@ public class Post {
         this.member = member;
     }
 
-    public void versionUp() {
+    public void changeContents(String contents) {
+        this.contents = contents;
+        versionUp();
+    }
+
+    private void versionUp() {
         this.version++;
     }
 }
