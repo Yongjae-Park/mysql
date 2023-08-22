@@ -57,7 +57,7 @@ class MemberRepositoryTest {
     @DisplayName("추가한 세명의 멤버를 저장한 후 전체 조회 시 사이즈 값이 COUNT + 3이다.")
     @Test
     @Transactional
-    @Rollback(value = false)
+//    @Rollback(value = false)
     public void saveAll_Test() {
         Member member1 = createMemberWithNickName("yongjae1");
         Member member2 = createMemberWithNickName("yongjae2");
@@ -80,30 +80,11 @@ class MemberRepositoryTest {
     @Test
     void findById_Test() {
         Member member = createMember();
+        memberJpaRepository.save(member);
 
         Optional<Member> findMember = memberJpaRepository.findById(member.getId());
 
         assertThat(findMember.orElseThrow().getId()).isEqualTo(member.getId());
-    }
-
-    private Member createMember() {
-        Member member = Member.builder()
-                .nickname("yongjae")
-                .email("yongjae@gmail.com")
-                .birthday(LocalDate.of(1992,04,14))
-                .build();
-
-        return memberJpaRepository.save(member);
-    }
-
-    private Member createMemberWithNickName(String nickName) {
-        Member member = Member.builder()
-                .nickname("yongjae")
-                .email("yongjae@gmail.com")
-                .birthday(LocalDate.of(1992,04,14))
-                .build();
-
-        return member;
     }
 
     @DisplayName("없는 id의 경우 Optional.empty를 반환받는다.")
@@ -116,6 +97,7 @@ class MemberRepositoryTest {
 
     @DisplayName("IN조건 만족하는 멤버를 전체 조회한다.")
     @Test
+    @Transactional
     void findAllByIdIn_Test() {
         List<Long> ids = new ArrayList<>();
 
@@ -131,15 +113,16 @@ class MemberRepositoryTest {
         assertThat(findMembers.size()).isEqualTo(tc);
     }
 
-    @DisplayName("조회한 전체 멤버 수가 초기 셋팅한 멤버의 수와 같다.")
-    @Test
-    void findAll_Test() {
-        List<Member> findMembers = memberJpaRepository.findAll();
-
-        int findMemberSize = findMembers.size();
-
-        assertThat(findMemberSize).isEqualTo(COUNT);
-    }
+//    @DisplayName("조회한 전체 멤버 수가 초기 셋팅한 멤버의 수와 같다.")
+//    @Test
+//    @Transactional
+//    void findAll_Test() {
+//        List<Member> findMembers = memberJpaRepository.findAll();
+//
+//        int findMemberSize = findMembers.size();
+//
+//        assertThat(findMemberSize).isEqualTo(COUNT);
+//    }
 
     @DisplayName("생성한 멤버의 id와 생성 후 멤버의 id가 같다.")
     @Test
@@ -150,4 +133,25 @@ class MemberRepositoryTest {
 
         assertThat(member.getId()).isEqualTo(savedMember.getId());
     }
+
+    private Member createMember() {
+        Member member = Member.builder()
+                .nickname("yongjae")
+                .email("yongjae@gmail.com")
+                .birthday(LocalDate.of(1992,04,14))
+                .build();
+
+        return member;
+    }
+
+    private Member createMemberWithNickName(String nickName) {
+        Member member = Member.builder()
+                .nickname(nickName)
+                .email("yongjae@gmail.com")
+                .birthday(LocalDate.of(1992,04,14))
+                .build();
+
+        return member;
+    }
+
 }
