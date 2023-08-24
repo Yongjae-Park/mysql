@@ -26,6 +26,9 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "memberId")
     private Member member;
+
+//    private String memberId;
+
     private String contents;
 
     private LocalDate createdDate;
@@ -47,12 +50,13 @@ public class Post {
     @Builder
     public Post(Long id, Member member, String contents, LocalDate createdDate, Long likeCount, Long version, LocalDateTime createdAt) {
         this.id = id;
-        this.member = Objects.requireNonNull(member);
+//        this.member = Objects.requireNonNull(member);
         this.contents = Objects.requireNonNull(contents);
         this.createdDate = FieldUtils.getLocalDate(createdDate);
         this.likeCount = likeCount == null ? 0 : likeCount;
         this.version = version == null ? 0 : version;
         this.createdAt = FieldUtils.getLocalDateTime(createdAt);
+        setMember(member);
     }
 
     public void incrementLikeCount() {
@@ -61,6 +65,7 @@ public class Post {
 
     public void setMember(Member member) {
         this.member = member;
+        this.member.getPosts().add(this);
     }
 
     public void changeContents(String contents) {
@@ -71,4 +76,5 @@ public class Post {
     private void versionUp() {
         this.version++;
     }
+
 }

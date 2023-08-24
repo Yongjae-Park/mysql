@@ -1,106 +1,1 @@
-package com.example.fastcampusmysql.domain.post.repository;
-
-import com.example.fastcampusmysql.domain.member.entity.Member;
-import com.example.fastcampusmysql.domain.member.repository.MemberJpaRepository;
-import com.example.fastcampusmysql.domain.post.entity.Post;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@SpringBootTest
-@Transactional
-public class PostJpaRepositoryTest {
-
-    @Autowired
-    private PostJpaRepository postJpaRepository;
-
-    @Autowired
-    private MemberJpaRepository memberJpaRepository;
-
-    private Member member;
-    @BeforeEach
-    void setUp() {
-        Member member = Member.builder()
-                .nickname("test")
-                .email("test@gmail.com")
-                .birthday(LocalDate.of(2023,01,01))
-                .build();
-
-        this.member = memberJpaRepository.save(member);
-    }
-
-    @DisplayName("°Ô½Ã¹° µî·Ï ½ÇÆĞ - µî·ÏµÇÁö ¾ÊÀº È¸¿øÀÏ °æ¿ì °Ô½Ã¹°ÀÌ »ı¼ºµÇÁö ¾Ê´Â´Ù.")
-    @Test
-    void fail_save_optional_property_Test() {
-        Member member = Member.builder()
-                .nickname("invalid")
-                .email("invalid@gmail.com")
-                .birthday(LocalDate.of(1992, 4, 14))
-
-                .build();
-
-        Post post = Post.builder()
-                .member(member)
-                .contents("temp")
-                .build();
-
-        assertThrows(InvalidDataAccessApiUsageException.class, () ->
-                postJpaRepository.save(post));
-    }
-
-    @DisplayName("°Ô½Ã¹° µî·Ï ¼º°øÇÑ´Ù.")
-    @Test
-    void save_Test() {
-        Post post = Post.builder()
-                .contents("temp")
-                .member(this.member)
-                .build();
-
-        Post savedPost = postJpaRepository.save(post);
-
-        assertThat(savedPost.getMember().getId()).isEqualTo(this.member.getId());
-    }
-
-    @DisplayName("È¸¿ø Á¤º¸·Î °Ô½Ã¹°À» ÀüºÎ Á¶È¸ÇÑ´Ù.")
-    @Test
-    void findByMemberId() {
-        createPosts();
-
-        List<Post> findPosts = postJpaRepository.findByMember(this.member);
-
-        assertThat(findPosts.size()).isEqualTo(2);
-    }
-
-    private void createPosts() {
-        List<Post> posts = new ArrayList<>();
-
-        Post first_post = createPostWithContents("test");
-        Post second_post = createPostWithContents("test2");
-
-        posts.add(first_post);
-        posts.add(second_post);
-
-        postJpaRepository.saveAll(posts);
-    }
-
-    private Post createPostWithContents(String contents) {
-        Post post = Post.builder()
-                .member(this.member)
-                .contents(contents)
-                .version(1L)
-                .build();
-
-        return post;
-    }
-}
+package com.example.fastcampusmysql.domain.post.repository;import com.example.fastcampusmysql.domain.member.entity.Member;import com.example.fastcampusmysql.domain.member.repository.MemberJpaRepository;import com.example.fastcampusmysql.domain.post.entity.Post;import org.junit.jupiter.api.BeforeEach;import org.junit.jupiter.api.DisplayName;import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.boot.test.context.SpringBootTest;import org.springframework.dao.InvalidDataAccessApiUsageException;import org.springframework.transaction.annotation.Transactional;import java.time.LocalDate;import java.util.ArrayList;import java.util.List;import static org.assertj.core.api.Assertions.assertThat;import static org.junit.jupiter.api.Assertions.assertThrows;@SpringBootTest@Transactionalpublic class PostJpaRepositoryTest {    @Autowired    private PostJpaRepository postJpaRepository;    @Autowired    private MemberJpaRepository memberJpaRepository;    private Member member;    @BeforeEach    void setUp() {        Member member = Member.builder()                .nickname("test")                .email("test@gmail.com")                .birthday(LocalDate.of(2023,01,01))                .build();        this.member = memberJpaRepository.save(member);    }    @DisplayName("ê²Œì‹œë¬¼ ë“±ë¡ ì‹¤íŒ¨ - ë“±ë¡ë˜ì§€ ì•Šì€ íšŒì›ì¼ ê²½ìš° ê²Œì‹œë¬¼ì´ ìƒì„±ë˜ì§€ ì•ŠëŠ”ë‹¤.")    @Test    void fail_save_optional_property_Test() {        Member member = Member.builder()                .nickname("invalid")                .email("invalid@gmail.com")                .birthday(LocalDate.of(1992, 4, 14))                .build();        Post post = Post.builder()                .member(member)                .contents("temp")                .build();        assertThrows(InvalidDataAccessApiUsageException.class, () ->                postJpaRepository.save(post));    }    @DisplayName("ê²Œì‹œë¬¼ ë“±ë¡ ì„±ê³µí•œë‹¤.")    @Test    void save_Test() {        Post post = Post.builder()                .contents("temp")                .member(this.member)                .build();        Post savedPost = postJpaRepository.save(post);        assertThat(savedPost.getMember().getId()).isEqualTo(this.member.getId());    }    @DisplayName("íšŒì› ì •ë³´ë¡œ ê²Œì‹œë¬¼ì„ ì „ë¶€ ì¡°íšŒí•œë‹¤.")    @Test    void findByMemberId() {        createPosts();        List<Post> findPosts = postJpaRepository.findByMember(this.member);        assertThat(findPosts.size()).isEqualTo(2);    }    private void createPosts() {        List<Post> posts = new ArrayList<>();        Post first_post = createPostWithContents("test");        Post second_post = createPostWithContents("test2");        posts.add(first_post);        posts.add(second_post);        postJpaRepository.saveAll(posts);    }    private Post createPostWithContents(String contents) {        Post post = Post.builder()                .member(this.member)                .contents(contents)                .version(1L)                .build();        return post;    }    @DisplayName("Postì˜ ë¹Œë” ë™ì‘ì‹œ memberì—°ê´€ê´€ê³„ ë©”ì†Œë“œê°€ í˜¸ì¶œë˜ì–´ ë©¤ë²„ì˜ ê²Œì‹œë¬¼ë¦¬ìŠ¤íŠ¸ì— í•´ë‹¹ ê²Œì‹œë¬¼ì´ ì œëŒ€ë¡œ ì¶”ê°€ë¨ì„ í™•ì¸í•œë‹¤.")    @Test    void íšŒì›_ê²Œì‹œë¬¼ë¦¬ìŠ¤íŠ¸ì—_ê²Œì‹œë¬¼ì¶”ê°€_í™•ì¸() {        Post post = Post.builder()                .contents("temp")                .member(this.member)                .build();        Post savedPost = postJpaRepository.save(post);        Member findMember = memberJpaRepository.findById(this.member.getId()).get();        assertThat(findMember.getPosts().get(0).getId()).isEqualTo(savedPost.getId());    }}

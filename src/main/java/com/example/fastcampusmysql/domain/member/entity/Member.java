@@ -2,16 +2,17 @@ package com.example.fastcampusmysql.domain.member.entity;
 
 import com.example.fastcampusmysql.application.utils.FieldUtils;
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
+import com.example.fastcampusmysql.domain.post.entity.Post;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -30,6 +31,10 @@ public class Member {
     private LocalDate birthday;
 
     private LocalDateTime createdAt;
+
+
+    @OneToMany(mappedBy = "member")
+    List<Post> posts = new ArrayList<>();
 
     private static Long NAME_MAX_LENGTH = 10L;
 
