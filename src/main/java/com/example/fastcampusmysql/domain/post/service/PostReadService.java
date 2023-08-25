@@ -45,7 +45,7 @@ public class PostReadService {
 
     private PostDto toDto(Post post) {
         return new PostDto(
-                post.getMember(),
+                post.getMember().getId(),
                 post.getContents(),
                 post.getCreatedAt(),
                 postLikeRepository.count(post.getId()));

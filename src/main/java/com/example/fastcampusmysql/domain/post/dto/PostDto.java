@@ -1,14 +1,21 @@
 package com.example.fastcampusmysql.domain.post.dto;
 
-import com.example.fastcampusmysql.domain.member.entity.Member;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record PostDto(
-//        Long memberId,
-        Member member,
+//        String memberEmail,
+        Long memberId,
         String contents,
         LocalDateTime createdAt,
         Long likeCount) {
+
+    public record PostRequestDto(){}
+
+    public record PostResponseDto(){
+
+    }
 
 }
